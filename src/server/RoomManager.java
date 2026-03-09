@@ -7,7 +7,8 @@ public class RoomManager {
     private final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
     private static RoomManager instance;
 
-    private RoomManager() {}
+    private RoomManager() {
+    }
 
     public static synchronized RoomManager getInstance() {
         if (instance == null) {
@@ -17,13 +18,13 @@ public class RoomManager {
     }
 
     public synchronized String createRoom(String roomName, ClientHandler creator,
-                                           String team1Name, String category,
-                                           String difficulty, int numQuestions) {
+            String team1Name, String category,
+            String difficulty, int numQuestions) {
         if (rooms.containsKey(roomName.toLowerCase())) {
             return "A room with that name already exists.";
         }
         GameRoom room = new GameRoom(roomName, creator, team1Name,
-                                     category, difficulty, numQuestions);
+                category, difficulty, numQuestions);
         rooms.put(roomName.toLowerCase(), room);
         return null; // success
     }
@@ -50,7 +51,6 @@ public class RoomManager {
      * Clean up finished or empty rooms.
      */
     public synchronized void cleanup() {
-        rooms.entrySet().removeIf(e ->
-            e.getValue().getState() == GameRoom.RoomState.FINISHED);
+        rooms.entrySet().removeIf(e -> e.getValue().getState() == GameRoom.RoomState.FINISHED);
     }
 }

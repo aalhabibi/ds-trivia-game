@@ -1,13 +1,16 @@
 # Multiplayer Trivia Game — Distributed Systems Assignment 1
 
 ## Overview
+
 A multiplayer trivia game built with Java Socket programming and multithreading. Supports single-player and team-based multiplayer modes over a client-server architecture.
 
 ## Requirements
+
 - **Java JDK 8 or higher** (tested with JDK 17)
 - No external libraries — uses only standard Java APIs (`java.net`, `java.io`, `java.util`)
 
 ## Project Structure
+
 ```
 Assignment 1/
 ├── src/
@@ -41,38 +44,51 @@ Assignment 1/
 ## How to Compile & Run
 
 ### Step 1: Compile
+
 ```
 compile.bat
 ```
+
 Or manually:
+
 ```
 javac -d bin src\model\*.java src\server\*.java src\client\*.java
 ```
 
 ### Step 2: Start the Server
+
 ```
 run_server.bat
 ```
+
 Or manually:
+
 ```
 java -cp bin server.GameServer
 ```
+
 The server loads all data files from the `data/` directory and listens on port **12345** (configurable in `data/config.properties`).
 
 ### Step 3: Start Client(s)
+
 Open one or more new terminal windows and run:
+
 ```
 run_client.bat
 ```
+
 Or manually:
+
 ```
 java -cp bin client.GameClient localhost 12345
 ```
+
 You can connect multiple clients simultaneously (at least 4 supported).
 
 ## Game Features
 
 ### Authentication
+
 - **Login**: Enter existing username and password
 - **Register**: Create a new account with name, username, and password
 - Error codes:
@@ -81,6 +97,7 @@ You can connect multiple clients simultaneously (at least 4 supported).
   - **409** — Username already taken during registration
 
 ### Single Player Mode
+
 1. Choose a question category (Geography, Science, Math, History, Technology, or All)
 2. Choose difficulty (Easy, Medium, Hard, or Mixed)
 3. Choose number of questions
@@ -88,6 +105,7 @@ You can connect multiple clients simultaneously (at least 4 supported).
 5. See results and score saved to history
 
 ### Multiplayer Mode (Teams)
+
 1. **Create Room**: Set room name, team name, category, difficulty, and question count
 2. **Join Room**: Browse available rooms, join an existing team or create Team 2
 3. Room creator types `start` when both teams have equal players
@@ -96,6 +114,7 @@ You can connect multiple clients simultaneously (at least 4 supported).
 6. After the game: full results with per-player question details
 
 ### Game Mechanics
+
 - Each question has a time limit (default: 30 seconds, configurable)
 - Timer warnings at 15, 10, 5, 3, and 1 second(s) remaining
 - Each player gets ONE attempt per question
@@ -104,19 +123,23 @@ You can connect multiple clients simultaneously (at least 4 supported).
 - Type `-` at any time to quit the current game/menu
 
 ### Scoring
+
 | Difficulty | Points per Correct Answer |
-|------------|--------------------------|
-| Easy       | 10                       |
-| Medium     | 15                       |
-| Hard       | 20                       |
+| ---------- | ------------------------- |
+| Easy       | 10                        |
+| Medium     | 15                        |
+| Hard       | 20                        |
 
 Wrong answers and timeouts score 0 points. No negative scoring.
 
 ### Score History
+
 View your past game scores from the main menu. History is persisted across server restarts.
 
 ## Configuration
+
 Edit `data/config.properties` to customize:
+
 ```properties
 server.port=12345
 min.players.per.team=1
@@ -125,29 +148,34 @@ question.time.seconds=30
 ```
 
 ## Data File Formats
+
 All data files use `|` as a delimiter.
 
 ### users.txt
+
 ```
 # name|username|password
 John Doe|john|pass123
 ```
 
 ### questions.txt
+
 ```
 # id|category|difficulty|question|choiceA|choiceB|choiceC|choiceD|answer
 1|Geography|easy|What is the capital of France?|London|Paris|Berlin|Madrid|B
 ```
 
 ### scores.txt
+
 ```
 # username|date|mode|score|correct|total|roomName
 john|2026-03-10|single|120|8|10|
 ```
 
 ## Pre-loaded Test Accounts
+
 | Name        | Username | Password |
-|-------------|----------|----------|
+| ----------- | -------- | -------- |
 | John Doe    | john     | pass123  |
 | Jane Smith  | jane     | pass456  |
 | Alice Brown | alice    | pass789  |

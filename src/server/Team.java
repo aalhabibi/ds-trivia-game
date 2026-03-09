@@ -12,15 +12,21 @@ public class Team {
         this.name = name;
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     public List<ClientHandler> getPlayers() {
         return Collections.unmodifiableList(players);
     }
 
-    public int getPlayerCount() { return players.size(); }
+    public int getPlayerCount() {
+        return players.size();
+    }
 
-    public synchronized int getScore() { return score; }
+    public synchronized int getScore() {
+        return score;
+    }
 
     public synchronized void addScore(int points) {
         this.score += points;

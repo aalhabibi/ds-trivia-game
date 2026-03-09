@@ -42,7 +42,7 @@ public class GameServer {
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
                     System.out.println("[SERVER] New connection from: "
-                                       + clientSocket.getRemoteSocketAddress());
+                            + clientSocket.getRemoteSocketAddress());
                     ClientHandler handler = new ClientHandler(clientSocket);
                     Thread thread = new Thread(handler, "Client-" + clientSocket.getPort());
                     thread.setDaemon(true);

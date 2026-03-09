@@ -12,7 +12,8 @@ public class GameClient {
         int port = 12345;
 
         // Allow host and port from command line args
-        if (args.length >= 1) host = args[0];
+        if (args.length >= 1)
+            host = args[0];
         if (args.length >= 2) {
             try {
                 port = Integer.parseInt(args[1]);
@@ -27,9 +28,9 @@ public class GameClient {
             System.out.println("Connected!\n");
 
             BufferedReader serverReader = new BufferedReader(
-                new InputStreamReader(socket.getInputStream()));
+                    new InputStreamReader(socket.getInputStream()));
             PrintWriter serverWriter = new PrintWriter(
-                socket.getOutputStream(), true);
+                    socket.getOutputStream(), true);
 
             // Thread to read from server and display
             Thread readerThread = new Thread(() -> {
@@ -55,7 +56,8 @@ public class GameClient {
                 while (running) {
                     if (stdin.hasNextLine()) {
                         String input = stdin.nextLine();
-                        if (!running) break;
+                        if (!running)
+                            break;
                         serverWriter.println(input);
 
                         // Flush to ensure immediate delivery

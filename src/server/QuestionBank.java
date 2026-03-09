@@ -36,7 +36,8 @@ public class QuestionBank {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) continue;
+                if (line.isEmpty() || line.startsWith("#"))
+                    continue;
                 Question q = Question.fromFileStringFull(line);
                 if (q != null) {
                     questions.add(q);
@@ -48,15 +49,16 @@ public class QuestionBank {
 
     /**
      * Get a filtered and randomized list of questions.
-     * @param category null for all categories
+     * 
+     * @param category   null for all categories
      * @param difficulty null for mixed difficulty
-     * @param count max number of questions
+     * @param count      max number of questions
      */
     public List<Question> getQuestions(String category, String difficulty, int count) {
         List<Question> filtered = questions.stream()
-            .filter(q -> category == null || q.getCategory().equalsIgnoreCase(category))
-            .filter(q -> difficulty == null || q.getDifficulty().equalsIgnoreCase(difficulty))
-            .collect(Collectors.toList());
+                .filter(q -> category == null || q.getCategory().equalsIgnoreCase(category))
+                .filter(q -> difficulty == null || q.getDifficulty().equalsIgnoreCase(difficulty))
+                .collect(Collectors.toList());
 
         Collections.shuffle(filtered);
         return filtered.subList(0, Math.min(count, filtered.size()));
@@ -79,8 +81,8 @@ public class QuestionBank {
      */
     public int getAvailableCount(String category, String difficulty) {
         return (int) questions.stream()
-            .filter(q -> category == null || q.getCategory().equalsIgnoreCase(category))
-            .filter(q -> difficulty == null || q.getDifficulty().equalsIgnoreCase(difficulty))
-            .count();
+                .filter(q -> category == null || q.getCategory().equalsIgnoreCase(category))
+                .filter(q -> difficulty == null || q.getDifficulty().equalsIgnoreCase(difficulty))
+                .count();
     }
 }

@@ -7,7 +7,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GameRoom {
-    public enum RoomState { WAITING, IN_PROGRESS, FINISHED }
+    public enum RoomState {
+        WAITING, IN_PROGRESS, FINISHED
+    }
 
     private final String name;
     private final ClientHandler creator;
@@ -25,10 +27,11 @@ public class GameRoom {
     private final Map<ClientHandler, String> currentAnswers = new ConcurrentHashMap<>();
     private final Map<ClientHandler, Integer> playerScores = new ConcurrentHashMap<>();
     private final Map<ClientHandler, List<String[]>> playerResults = new ConcurrentHashMap<>();
-    // Each String[]: {questionText, playerAnswer, correctAnswer, "correct"/"wrong"/"timeout"}
+    // Each String[]: {questionText, playerAnswer, correctAnswer,
+    // "correct"/"wrong"/"timeout"}
 
     public GameRoom(String name, ClientHandler creator, String team1Name,
-                    String category, String difficulty, int numQuestions) {
+            String category, String difficulty, int numQuestions) {
         this.name = name;
         this.creator = creator;
         this.team1 = new Team(team1Name);
@@ -40,14 +43,37 @@ public class GameRoom {
     }
 
     // --- Getters ---
-    public String getName() { return name; }
-    public ClientHandler getCreator() { return creator; }
-    public Team getTeam1() { return team1; }
-    public Team getTeam2() { return team2; }
-    public String getCategory() { return category; }
-    public String getDifficulty() { return difficulty; }
-    public int getNumQuestions() { return numQuestions; }
-    public RoomState getState() { return state; }
+    public String getName() {
+        return name;
+    }
+
+    public ClientHandler getCreator() {
+        return creator;
+    }
+
+    public Team getTeam1() {
+        return team1;
+    }
+
+    public Team getTeam2() {
+        return team2;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public int getNumQuestions() {
+        return numQuestions;
+    }
+
+    public RoomState getState() {
+        return state;
+    }
 
     public List<ClientHandler> getAllPlayers() {
         List<ClientHandler> all = new ArrayList<>(team1.getPlayers());
@@ -69,7 +95,7 @@ public class GameRoom {
         team2 = new Team(teamName);
         team2.addPlayer(player);
         broadcastToAll("[ROOM] " + player.getUsername() + " created Team '"
-                       + teamName + "' and joined it.");
+                + teamName + "' and joined it.");
         return null;
     }
 
@@ -82,7 +108,7 @@ public class GameRoom {
         }
         if (team.getPlayerCount() >= config.getMaxPlayersPerTeam()) {
             return "Team '" + team.getName() + "' is full ("
-                   + config.getMaxPlayersPerTeam() + " max).";
+                    + config.getMaxPlayersPerTeam() + " max).";
         }
         if (team.hasPlayer(player)) {
             return "You are already on this team.";
@@ -90,7 +116,7 @@ public class GameRoom {
 
         team.addPlayer(player);
         broadcastToAll("[ROOM] " + player.getUsername() + " joined Team '"
-                       + team.getName() + "'.");
+                + team.getName() + "'.");
         return null;
     }
 
@@ -130,8 +156,8 @@ public class GameRoom {
         }
         if (team1.getPlayerCount() != team2.getPlayerCount()) {
             return "Teams must have equal players. '"
-                   + team1.getName() + "': " + team1.getPlayerCount()
-                   + ", '" + team2.getName() + "': " + team2.getPlayerCount();
+                    + team1.getName() + "': " + team1.getPlayerCount()
+                    + ", '" + team2.getName() + "': " + team2.getPlayerCount();
         }
         if (team1.getPlayerCount() < config.getMinPlayersPerTeam()) {
             return "Each team needs at least " + config.getMinPlayersPerTeam() + " player(s).";
@@ -185,14 +211,15 @@ public class GameRoom {
 
                 broadcastToAll(q.getDisplayText(i + 1, questions.size()));
                 broadcastToAll("Enter your answer (A/B/C/D). You have "
-                               + timeLimit + " seconds:");
+                        + timeLimit + " seconds:");
 
                 // Timer countdown
                 Set<Integer> warned = new HashSet<>();
-                int[] warnings = {15, 10, 5, 3, 1};
+                int[] warnings = { 15, 10, 5, 3, 1 };
 
                 for (int remaining = timeLimit; remaining > 0; remaining--) {
-                    if (allPlayersAnswered()) break;
+                    if (allPlayersAnswered())
+                        break;
                     Thread.sleep(1000);
 
                     for (int w : warnings) {
@@ -218,13 +245,13 @@ public class GameRoom {
                     String teamName = team1.hasPlayer(p) ? team1.getName() : team2.getName();
                     if (ans == null) {
                         broadcastToAll("  " + p.getUsername() + " (" + teamName
-                                       + "): No answer (timeout)");
+                                + "): No answer (timeout)");
                     } else if (ans.equalsIgnoreCase(q.getCorrectAnswer())) {
                         broadcastToAll("  " + p.getUsername() + " (" + teamName
-                                       + "): " + ans + " [CORRECT] +" + q.getPoints() + " pts");
+                                + "): " + ans + " [CORRECT] +" + q.getPoints() + " pts");
                     } else {
                         broadcastToAll("  " + p.getUsername() + " (" + teamName
-                                       + "): " + ans + " [WRONG]");
+                                + "): " + ans + " [WRONG]");
                     }
                 }
 
@@ -270,7 +297,7 @@ public class GameRoom {
         for (ClientHandler p : getAllPlayers()) {
             String answer = currentAnswers.get(p);
             boolean correct = answer != null
-                              && answer.equalsIgnoreCase(q.getCorrectAnswer());
+                    && answer.equalsIgnoreCase(q.getCorrectAnswer());
 
             if (correct) {
                 int points = q.getPoints();
@@ -286,14 +313,14 @@ public class GameRoom {
 
             // Track result
             String status = (answer == null) ? "timeout"
-                            : (correct ? "correct" : "wrong");
+                    : (correct ? "correct" : "wrong");
             List<String[]> results = playerResults.get(p);
             if (results != null) {
-                results.add(new String[]{
-                    q.getText(),
-                    answer != null ? answer : "-",
-                    q.getCorrectAnswer(),
-                    status
+                results.add(new String[] {
+                        q.getText(),
+                        answer != null ? answer : "-",
+                        q.getCorrectAnswer(),
+                        status
                 });
             }
         }
@@ -328,9 +355,9 @@ public class GameRoom {
         for (Map.Entry<ClientHandler, Integer> entry : sorted) {
             ClientHandler p = entry.getKey();
             String teamName = team1.hasPlayer(p) ? team1.getName()
-                              : (team2 != null && team2.hasPlayer(p) ? team2.getName() : "N/A");
+                    : (team2 != null && team2.hasPlayer(p) ? team2.getName() : "N/A");
             broadcastToAll("  " + rank + ". " + p.getUsername()
-                           + " (" + teamName + "): " + entry.getValue() + " pts");
+                    + " (" + teamName + "): " + entry.getValue() + " pts");
             rank++;
         }
 
@@ -338,20 +365,27 @@ public class GameRoom {
         broadcastToAll("\n-- Question Details --");
         for (ClientHandler p : getAllPlayers()) {
             List<String[]> results = playerResults.get(p);
-            if (results == null) continue;
+            if (results == null)
+                continue;
 
             broadcastToAll("\n  " + p.getUsername() + ":");
             for (int i = 0; i < results.size(); i++) {
                 String[] r = results.get(i);
                 String statusTag;
                 switch (r[3]) {
-                    case "correct": statusTag = "[CORRECT]"; break;
-                    case "wrong":   statusTag = "[WRONG]";   break;
-                    default:        statusTag = "[TIMEOUT]"; break;
+                    case "correct":
+                        statusTag = "[CORRECT]";
+                        break;
+                    case "wrong":
+                        statusTag = "[WRONG]";
+                        break;
+                    default:
+                        statusTag = "[TIMEOUT]";
+                        break;
                 }
                 broadcastToAll("    Q" + (i + 1) + ": " + r[0]);
                 broadcastToAll("         Your answer: " + r[1]
-                               + " | Correct: " + r[2] + " " + statusTag);
+                        + " | Correct: " + r[2] + " " + statusTag);
             }
         }
 
@@ -368,13 +402,13 @@ public class GameRoom {
             int correctCount = 0;
             if (results != null) {
                 for (String[] r : results) {
-                    if ("correct".equals(r[3])) correctCount++;
+                    if ("correct".equals(r[3]))
+                        correctCount++;
                 }
             }
             ScoreEntry entry = new ScoreEntry(
-                p.getUsername(), date, "multiplayer",
-                score, correctCount, questions.size(), name
-            );
+                    p.getUsername(), date, "multiplayer",
+                    score, correctCount, questions.size(), name);
             sm.addScore(entry);
         }
     }
@@ -413,19 +447,19 @@ public class GameRoom {
         StringBuilder sb = new StringBuilder();
         sb.append("\n--- Room: ").append(name).append(" ---\n");
         sb.append("Category: ").append(category)
-          .append(" | Difficulty: ").append(difficulty)
-          .append(" | Questions: ").append(numQuestions).append("\n");
+                .append(" | Difficulty: ").append(difficulty)
+                .append(" | Questions: ").append(numQuestions).append("\n");
         sb.append("State: ").append(state).append("\n");
 
         sb.append("\nTeam 1 - ").append(team1.getName())
-          .append(" (").append(team1.getPlayerCount()).append(" players):\n");
+                .append(" (").append(team1.getPlayerCount()).append(" players):\n");
         for (ClientHandler p : team1.getPlayers()) {
             sb.append("  - ").append(p.getUsername()).append("\n");
         }
 
         if (team2 != null) {
             sb.append("Team 2 - ").append(team2.getName())
-              .append(" (").append(team2.getPlayerCount()).append(" players):\n");
+                    .append(" (").append(team2.getPlayerCount()).append(" players):\n");
             for (ClientHandler p : team2.getPlayers()) {
                 sb.append("  - ").append(p.getUsername()).append("\n");
             }
@@ -439,10 +473,10 @@ public class GameRoom {
 
     public String getListDisplay() {
         String t2Info = (team2 != null)
-            ? team2.getName() + " [" + team2.getPlayerCount() + "]"
-            : "[empty]";
+                ? team2.getName() + " [" + team2.getPlayerCount() + "]"
+                : "[empty]";
         return name + " (Creator: " + creator.getUsername()
-               + ", " + team1.getName() + " [" + team1.getPlayerCount() + "] vs "
-               + t2Info + ") [" + category + "/" + difficulty + "/" + numQuestions + "Q]";
+                + ", " + team1.getName() + " [" + team1.getPlayerCount() + "] vs "
+                + t2Info + ") [" + category + "/" + difficulty + "/" + numQuestions + "Q]";
     }
 }

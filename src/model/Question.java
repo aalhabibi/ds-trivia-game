@@ -9,7 +9,7 @@ public class Question {
     private String correctAnswer; // A, B, C, or D
 
     public Question(int id, String category, String difficulty, String text,
-                    String[] choices, String correctAnswer) {
+            String[] choices, String correctAnswer) {
         this.id = id;
         this.category = category;
         this.difficulty = difficulty;
@@ -18,19 +18,40 @@ public class Question {
         this.correctAnswer = correctAnswer.toUpperCase();
     }
 
-    public int getId() { return id; }
-    public String getCategory() { return category; }
-    public String getDifficulty() { return difficulty; }
-    public String getText() { return text; }
-    public String[] getChoices() { return choices; }
-    public String getCorrectAnswer() { return correctAnswer; }
+    public int getId() {
+        return id;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String[] getChoices() {
+        return choices;
+    }
+
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
 
     public int getPoints() {
         switch (difficulty.toLowerCase()) {
-            case "easy":   return 10;
-            case "medium": return 15;
-            case "hard":   return 20;
-            default:       return 10;
+            case "easy":
+                return 10;
+            case "medium":
+                return 15;
+            case "hard":
+                return 20;
+            default:
+                return 10;
         }
     }
 
@@ -58,15 +79,16 @@ public class Question {
 
     public static Question fromFileString(String line) {
         String[] parts = line.split("\\|");
-        if (parts.length != 8) return null;
+        if (parts.length != 8)
+            return null;
         try {
             int id = Integer.parseInt(parts[0].trim());
             String category = parts[1].trim();
             String difficulty = parts[2].trim();
             String text = parts[3].trim();
             String[] choices = {
-                parts[4].trim(), parts[5].trim(),
-                parts[6].trim(), parts[7].trim()
+                    parts[4].trim(), parts[5].trim(),
+                    parts[6].trim(), parts[7].trim()
             };
             // correct answer is extracted separately (9th field)
             return null; // handled below
@@ -77,15 +99,16 @@ public class Question {
 
     public static Question fromFileStringFull(String line) {
         String[] parts = line.split("\\|");
-        if (parts.length != 9) return null;
+        if (parts.length != 9)
+            return null;
         try {
             int id = Integer.parseInt(parts[0].trim());
             String category = parts[1].trim();
             String difficulty = parts[2].trim();
             String text = parts[3].trim();
             String[] choices = {
-                parts[4].trim(), parts[5].trim(),
-                parts[6].trim(), parts[7].trim()
+                    parts[4].trim(), parts[5].trim(),
+                    parts[6].trim(), parts[7].trim()
             };
             String answer = parts[8].trim().toUpperCase();
             return new Question(id, category, difficulty, text, choices, answer);

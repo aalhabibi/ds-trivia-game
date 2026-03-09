@@ -51,7 +51,7 @@ public class ClientHandler implements Runnable {
 
         } catch (IOException e) {
             System.out.println("[SERVER] Connection error for "
-                               + getUsername() + ": " + e.getMessage());
+                    + getUsername() + ": " + e.getMessage());
         } finally {
             cleanup();
         }
@@ -70,15 +70,18 @@ public class ClientHandler implements Runnable {
             sendMessage("Enter choice:");
 
             String choice = readLine();
-            if (choice == null) return false;
+            if (choice == null)
+                return false;
             choice = choice.trim();
 
             switch (choice) {
                 case "1":
-                    if (handleLogin()) return true;
+                    if (handleLogin())
+                        return true;
                     break;
                 case "2":
-                    if (handleRegister()) return true;
+                    if (handleRegister())
+                        return true;
                     break;
                 default:
                     sendMessage("Invalid choice. Please enter 1 or 2.");
@@ -90,12 +93,14 @@ public class ClientHandler implements Runnable {
     private boolean handleLogin() throws IOException {
         sendMessage("Enter username:");
         String username = readLine();
-        if (username == null) return false;
+        if (username == null)
+            return false;
         username = username.trim();
 
         sendMessage("Enter password:");
         String password = readLine();
-        if (password == null) return false;
+        if (password == null)
+            return false;
         password = password.trim();
 
         try {
@@ -114,12 +119,14 @@ public class ClientHandler implements Runnable {
     private boolean handleRegister() throws IOException {
         sendMessage("Enter your full name:");
         String name = readLine();
-        if (name == null) return false;
+        if (name == null)
+            return false;
         name = name.trim();
 
         sendMessage("Choose a username:");
         String username = readLine();
-        if (username == null) return false;
+        if (username == null)
+            return false;
         username = username.trim();
 
         if (username.isEmpty()) {
@@ -129,7 +136,8 @@ public class ClientHandler implements Runnable {
 
         sendMessage("Choose a password:");
         String password = readLine();
-        if (password == null) return false;
+        if (password == null)
+            return false;
         password = password.trim();
 
         if (password.isEmpty()) {
@@ -162,7 +170,8 @@ public class ClientHandler implements Runnable {
             sendMessage("Enter choice:");
 
             String choice = readLine();
-            if (choice == null) break;
+            if (choice == null)
+                break;
             choice = choice.trim();
 
             switch (choice) {
@@ -222,7 +231,8 @@ public class ClientHandler implements Runnable {
         sendMessage("Enter choice (or '-' to go back):");
 
         String input = readLine();
-        if (input == null || "-".equals(input.trim())) return;
+        if (input == null || "-".equals(input.trim()))
+            return;
 
         int catChoice;
         try {
@@ -249,14 +259,23 @@ public class ClientHandler implements Runnable {
         sendMessage("Enter choice (or '-' to go back):");
 
         input = readLine();
-        if (input == null || "-".equals(input.trim())) return;
+        if (input == null || "-".equals(input.trim()))
+            return;
 
         String difficulty = null; // null = mixed
         switch (input.trim()) {
-            case "1": difficulty = "easy";   break;
-            case "2": difficulty = "medium"; break;
-            case "3": difficulty = "hard";   break;
-            case "4": difficulty = null;     break;
+            case "1":
+                difficulty = "easy";
+                break;
+            case "2":
+                difficulty = "medium";
+                break;
+            case "3":
+                difficulty = "hard";
+                break;
+            case "4":
+                difficulty = null;
+                break;
             default:
                 sendMessage("Invalid difficulty choice.");
                 return;
@@ -273,7 +292,8 @@ public class ClientHandler implements Runnable {
         sendMessage("Enter number of questions (1-" + available + "):");
 
         input = readLine();
-        if (input == null || "-".equals(input.trim())) return;
+        if (input == null || "-".equals(input.trim()))
+            return;
 
         int numQuestions;
         try {
@@ -304,7 +324,7 @@ public class ClientHandler implements Runnable {
         sendMessage("\n============================================");
         sendMessage("       SINGLE PLAYER GAME STARTING!");
         sendMessage("  Questions: " + questions.size()
-                    + " | Time per question: " + timeLimit + "s");
+                + " | Time per question: " + timeLimit + "s");
         sendMessage("  Type '-' at any time to quit the game.");
         sendMessage("============================================");
 
@@ -327,7 +347,7 @@ public class ClientHandler implements Runnable {
             }
 
             boolean isCorrect = answer != null
-                                && answer.equalsIgnoreCase(q.getCorrectAnswer());
+                    && answer.equalsIgnoreCase(q.getCorrectAnswer());
             String status;
             if (answer == null) {
                 status = "timeout";
@@ -343,10 +363,10 @@ public class ClientHandler implements Runnable {
             }
 
             sendMessage("Current score: " + score + " (" + correct
-                        + "/" + (i + 1) + " correct)");
+                    + "/" + (i + 1) + " correct)");
 
-            results.add(new String[]{q.getText(), answer != null ? answer : "-",
-                                     q.getCorrectAnswer(), status});
+            results.add(new String[] { q.getText(), answer != null ? answer : "-",
+                    q.getCorrectAnswer(), status });
 
             if (i < questions.size() - 1) {
                 sendMessage("\nNext question in 2 seconds...");
@@ -363,27 +383,32 @@ public class ClientHandler implements Runnable {
         sendMessage("            GAME OVER - RESULTS");
         sendMessage("================================================");
         sendMessage("Final Score: " + score + " (" + correct
-                    + "/" + results.size() + " correct)\n");
+                + "/" + results.size() + " correct)\n");
 
         for (int i = 0; i < results.size(); i++) {
             String[] r = results.get(i);
             String statusTag;
             switch (r[3]) {
-                case "correct": statusTag = "[CORRECT]"; break;
-                case "wrong":   statusTag = "[WRONG]";   break;
-                default:        statusTag = "[TIMEOUT]"; break;
+                case "correct":
+                    statusTag = "[CORRECT]";
+                    break;
+                case "wrong":
+                    statusTag = "[WRONG]";
+                    break;
+                default:
+                    statusTag = "[TIMEOUT]";
+                    break;
             }
             sendMessage("  Q" + (i + 1) + ": " + r[0]);
             sendMessage("       Your answer: " + r[1]
-                        + " | Correct: " + r[2] + " " + statusTag);
+                    + " | Correct: " + r[2] + " " + statusTag);
         }
         sendMessage("\n================================================");
 
         // Save score
         ScoreEntry entry = new ScoreEntry(
-            user.getUsername(), LocalDate.now().toString(),
-            "single", score, correct, results.size(), ""
-        );
+                user.getUsername(), LocalDate.now().toString(),
+                "single", score, correct, results.size(), "");
         ScoreManager.getInstance().addScore(entry);
         sendMessage("Score saved to history.");
     }
@@ -399,12 +424,13 @@ public class ClientHandler implements Runnable {
 
         long deadline = System.currentTimeMillis() + (long) seconds * 1000;
         Set<Integer> warned = new HashSet<>();
-        int[] warnings = {15, 10, 5, 3, 1};
+        int[] warnings = { 15, 10, 5, 3, 1 };
 
         try {
             while (true) {
                 long remainingMs = deadline - System.currentTimeMillis();
-                if (remainingMs <= 0) return null; // timed out
+                if (remainingMs <= 0)
+                    return null; // timed out
 
                 int remainingSec = (int) (remainingMs / 1000);
 
@@ -422,7 +448,8 @@ public class ClientHandler implements Runnable {
                         return null;
                     }
                     input = input.trim();
-                    if ("-".equals(input)) return "-";
+                    if ("-".equals(input))
+                        return "-";
                     String normalized = input.toUpperCase();
                     if (normalized.matches("[ABCD]")) {
                         return normalized;
@@ -453,16 +480,25 @@ public class ClientHandler implements Runnable {
             sendMessage("Enter choice:");
 
             String choice = readLine();
-            if (choice == null) return;
+            if (choice == null)
+                return;
             choice = choice.trim();
 
             switch (choice) {
-                case "1": handleCreateRoom(); break;
-                case "2": handleJoinRoom();   break;
-                case "3": handleListRooms();  break;
+                case "1":
+                    handleCreateRoom();
+                    break;
+                case "2":
+                    handleJoinRoom();
+                    break;
+                case "3":
+                    handleListRooms();
+                    break;
                 case "4":
-                case "-": return;
-                default:  sendMessage("Invalid choice.");
+                case "-":
+                    return;
+                default:
+                    sendMessage("Invalid choice.");
             }
         }
     }
@@ -483,7 +519,8 @@ public class ClientHandler implements Runnable {
     private void handleCreateRoom() throws IOException {
         sendMessage("\nEnter room name (or '-' to cancel):");
         String roomName = readLine();
-        if (roomName == null || "-".equals(roomName.trim())) return;
+        if (roomName == null || "-".equals(roomName.trim()))
+            return;
         roomName = roomName.trim();
         if (roomName.isEmpty()) {
             sendMessage("Room name cannot be empty.");
@@ -492,7 +529,8 @@ public class ClientHandler implements Runnable {
 
         sendMessage("Enter your team name:");
         String teamName = readLine();
-        if (teamName == null || "-".equals(teamName.trim())) return;
+        if (teamName == null || "-".equals(teamName.trim()))
+            return;
         teamName = teamName.trim();
         if (teamName.isEmpty()) {
             sendMessage("Team name cannot be empty.");
@@ -511,7 +549,8 @@ public class ClientHandler implements Runnable {
         sendMessage("Enter choice:");
 
         String input = readLine();
-        if (input == null || "-".equals(input.trim())) return;
+        if (input == null || "-".equals(input.trim()))
+            return;
 
         int catChoice;
         try {
@@ -540,14 +579,23 @@ public class ClientHandler implements Runnable {
         sendMessage("Enter choice:");
 
         input = readLine();
-        if (input == null || "-".equals(input.trim())) return;
+        if (input == null || "-".equals(input.trim()))
+            return;
 
         String difficulty;
         switch (input.trim()) {
-            case "1": difficulty = "easy";   break;
-            case "2": difficulty = "medium"; break;
-            case "3": difficulty = "hard";   break;
-            case "4": difficulty = "Mixed";  break;
+            case "1":
+                difficulty = "easy";
+                break;
+            case "2":
+                difficulty = "medium";
+                break;
+            case "3":
+                difficulty = "hard";
+                break;
+            case "4":
+                difficulty = "Mixed";
+                break;
             default:
                 sendMessage("Invalid choice.");
                 return;
@@ -566,7 +614,8 @@ public class ClientHandler implements Runnable {
         sendMessage("Enter number of questions (1-" + available + "):");
 
         input = readLine();
-        if (input == null || "-".equals(input.trim())) return;
+        if (input == null || "-".equals(input.trim()))
+            return;
 
         int numQuestions;
         try {
@@ -579,7 +628,7 @@ public class ClientHandler implements Runnable {
 
         // Create the room
         String error = RoomManager.getInstance().createRoom(
-            roomName, this, teamName, category, difficulty, numQuestions);
+                roomName, this, teamName, category, difficulty, numQuestions);
         if (error != null) {
             sendMessage("Error: " + error);
             return;
@@ -587,7 +636,7 @@ public class ClientHandler implements Runnable {
 
         currentRoom = RoomManager.getInstance().getRoom(roomName);
         sendMessage("\nRoom '" + roomName + "' created!"
-                    + " Your team: '" + teamName + "'");
+                + " Your team: '" + teamName + "'");
         sendMessage(currentRoom.getStatusDisplay());
 
         // Enter lobby
@@ -602,12 +651,13 @@ public class ClientHandler implements Runnable {
         try {
             prevTimeout = socket.getSoTimeout();
             socket.setSoTimeout(2000);
-        } catch (SocketException e) { /* ignore */ }
+        } catch (SocketException e) {
+            /* ignore */ }
 
         try {
             while (currentRoom != null
-                   && currentRoom.getState() == GameRoom.RoomState.WAITING
-                   && connected) {
+                    && currentRoom.getState() == GameRoom.RoomState.WAITING
+                    && connected) {
                 try {
                     String input = reader.readLine();
                     if (input == null) {
@@ -639,12 +689,13 @@ public class ClientHandler implements Runnable {
         } finally {
             try {
                 socket.setSoTimeout(prevTimeout);
-            } catch (SocketException e) { /* ignore */ }
+            } catch (SocketException e) {
+                /* ignore */ }
         }
 
         // If game started, enter game mode
         if (currentRoom != null
-            && currentRoom.getState() == GameRoom.RoomState.IN_PROGRESS) {
+                && currentRoom.getState() == GameRoom.RoomState.IN_PROGRESS) {
             enterGameMode();
         }
     }
@@ -654,11 +705,13 @@ public class ClientHandler implements Runnable {
         handleListRooms();
 
         List<GameRoom> rooms = RoomManager.getInstance().getWaitingRooms();
-        if (rooms.isEmpty()) return;
+        if (rooms.isEmpty())
+            return;
 
         sendMessage("\nEnter room name to join (or '-' to cancel):");
         String roomName = readLine();
-        if (roomName == null || "-".equals(roomName.trim())) return;
+        if (roomName == null || "-".equals(roomName.trim()))
+            return;
         roomName = roomName.trim();
 
         GameRoom room = RoomManager.getInstance().getRoom(roomName);
@@ -683,7 +736,8 @@ public class ClientHandler implements Runnable {
         sendMessage("Enter choice (or '-' to cancel):");
 
         String input = readLine();
-        if (input == null || "-".equals(input.trim())) return;
+        if (input == null || "-".equals(input.trim()))
+            return;
 
         switch (input.trim()) {
             case "1": {
@@ -704,7 +758,8 @@ public class ClientHandler implements Runnable {
                 } else {
                     sendMessage("Enter your team name:");
                     String teamName = readLine();
-                    if (teamName == null || "-".equals(teamName.trim())) return;
+                    if (teamName == null || "-".equals(teamName.trim()))
+                        return;
                     teamName = teamName.trim();
                     if (teamName.isEmpty()) {
                         sendMessage("Team name cannot be empty.");
@@ -738,12 +793,13 @@ public class ClientHandler implements Runnable {
         try {
             prevTimeout = socket.getSoTimeout();
             socket.setSoTimeout(2000);
-        } catch (SocketException e) { /* ignore */ }
+        } catch (SocketException e) {
+            /* ignore */ }
 
         try {
             while (currentRoom != null
-                   && currentRoom.getState() == GameRoom.RoomState.WAITING
-                   && connected) {
+                    && currentRoom.getState() == GameRoom.RoomState.WAITING
+                    && connected) {
                 try {
                     String input = reader.readLine();
                     if (input == null) {
@@ -767,12 +823,13 @@ public class ClientHandler implements Runnable {
         } finally {
             try {
                 socket.setSoTimeout(prevTimeout);
-            } catch (SocketException e) { /* ignore */ }
+            } catch (SocketException e) {
+                /* ignore */ }
         }
 
         // If game started, enter game mode
         if (currentRoom != null
-            && currentRoom.getState() == GameRoom.RoomState.IN_PROGRESS) {
+                && currentRoom.getState() == GameRoom.RoomState.IN_PROGRESS) {
             enterGameMode();
         }
     }
@@ -782,12 +839,13 @@ public class ClientHandler implements Runnable {
         try {
             prevTimeout = socket.getSoTimeout();
             socket.setSoTimeout(1000);
-        } catch (SocketException e) { /* ignore */ }
+        } catch (SocketException e) {
+            /* ignore */ }
 
         try {
             while (currentRoom != null
-                   && currentRoom.getState() == GameRoom.RoomState.IN_PROGRESS
-                   && connected) {
+                    && currentRoom.getState() == GameRoom.RoomState.IN_PROGRESS
+                    && connected) {
                 try {
                     String input = reader.readLine();
                     if (input == null) {
@@ -813,7 +871,8 @@ public class ClientHandler implements Runnable {
         } finally {
             try {
                 socket.setSoTimeout(prevTimeout);
-            } catch (SocketException e) { /* ignore */ }
+            } catch (SocketException e) {
+                /* ignore */ }
         }
 
         currentRoom = null;

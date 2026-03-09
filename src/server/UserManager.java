@@ -38,7 +38,8 @@ public class UserManager {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) continue;
+                if (line.isEmpty() || line.startsWith("#"))
+                    continue;
                 User user = User.fromFileString(line);
                 if (user != null) {
                     users.put(user.getUsername(), user);
@@ -59,6 +60,7 @@ public class UserManager {
 
     /**
      * Authenticate a user.
+     * 
      * @return the User if successful
      * @throws UserNotFoundException if username not found (404)
      * @throws UnauthorizedException if password is wrong (401)
@@ -77,6 +79,7 @@ public class UserManager {
 
     /**
      * Register a new user.
+     * 
      * @return the newly created User
      * @throws UsernameExistsException if username is already taken
      */
@@ -84,7 +87,7 @@ public class UserManager {
             throws UsernameExistsException {
         if (users.containsKey(username)) {
             throw new UsernameExistsException(
-                "Username '" + username + "' is already taken.");
+                    "Username '" + username + "' is already taken.");
         }
         User user = new User(name, username, password);
         users.put(username, user);
@@ -98,14 +101,20 @@ public class UserManager {
 
     // Custom exceptions
     public static class UserNotFoundException extends Exception {
-        public UserNotFoundException(String msg) { super(msg); }
+        public UserNotFoundException(String msg) {
+            super(msg);
+        }
     }
 
     public static class UnauthorizedException extends Exception {
-        public UnauthorizedException(String msg) { super(msg); }
+        public UnauthorizedException(String msg) {
+            super(msg);
+        }
     }
 
     public static class UsernameExistsException extends Exception {
-        public UsernameExistsException(String msg) { super(msg); }
+        public UsernameExistsException(String msg) {
+            super(msg);
+        }
     }
 }

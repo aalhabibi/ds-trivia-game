@@ -38,23 +38,24 @@ public class ScoreManager {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) continue;
+                if (line.isEmpty() || line.startsWith("#"))
+                    continue;
                 ScoreEntry entry = ScoreEntry.fromFileString(line);
                 if (entry != null) {
                     scoreHistory.computeIfAbsent(entry.getUsername(), k -> new ArrayList<>())
-                               .add(entry);
+                            .add(entry);
                 }
             }
         }
 
         int total = scoreHistory.values().stream().mapToInt(List::size).sum();
         System.out.println("[SCORES] Loaded " + total + " score entries for "
-                           + scoreHistory.size() + " users.");
+                + scoreHistory.size() + " users.");
     }
 
     public synchronized void addScore(ScoreEntry entry) {
         scoreHistory.computeIfAbsent(entry.getUsername(), k -> new ArrayList<>())
-                    .add(entry);
+                .add(entry);
         try {
             save();
         } catch (IOException e) {

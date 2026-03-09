@@ -11,7 +11,8 @@ public class GameConfig {
 
     private static GameConfig instance;
 
-    private GameConfig() {}
+    private GameConfig() {
+    }
 
     public static synchronized GameConfig getInstance() {
         if (instance == null) {
@@ -51,8 +52,19 @@ public class GameConfig {
         System.out.println("  Question time: " + questionTimeSeconds + "s");
     }
 
-    public int getServerPort() { return serverPort; }
-    public int getMinPlayersPerTeam() { return minPlayersPerTeam; }
-    public int getMaxPlayersPerTeam() { return maxPlayersPerTeam; }
-    public int getQuestionTimeSeconds() { return questionTimeSeconds; }
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    public int getMinPlayersPerTeam() {
+        return minPlayersPerTeam;
+    }
+
+    public int getMaxPlayersPerTeam() {
+        return maxPlayersPerTeam;
+    }
+
+    public int getQuestionTimeSeconds() {
+        return questionTimeSeconds;
+    }
 }

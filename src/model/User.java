@@ -11,9 +11,17 @@ public class User {
         this.password = password;
     }
 
-    public String getName() { return name; }
-    public String getUsername() { return username; }
-    public String getPassword() { return password; }
+    public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 
     public String toFileString() {
         return name + "|" + username + "|" + password;
@@ -21,7 +29,8 @@ public class User {
 
     public static User fromFileString(String line) {
         String[] parts = line.split("\\|");
-        if (parts.length != 3) return null;
+        if (parts.length != 3)
+            return null;
         return new User(parts[0].trim(), parts[1].trim(), parts[2].trim());
     }
 }
