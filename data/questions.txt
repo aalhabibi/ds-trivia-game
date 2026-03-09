@@ -1,0 +1,38 @@
+# id|category|difficulty|question|choiceA|choiceB|choiceC|choiceD|answer
+1|Geography|easy|What is the capital of France?|London|Paris|Berlin|Madrid|B
+2|Geography|easy|Which continent is Brazil located in?|Africa|Europe|South America|Asia|C
+3|Geography|easy|What is the largest ocean on Earth?|Atlantic|Pacific|Indian|Arctic|B
+4|Geography|medium|Which country has the largest land area?|China|United States|Russia|Canada|C
+5|Geography|medium|The Sahara Desert is located in which continent?|Asia|Europe|Africa|Australia|C
+6|Geography|medium|What is the longest river in the world?|Amazon|Nile|Mississippi|Yangtze|B
+7|Geography|hard|What is the smallest country in the world by area?|Monaco|Vatican City|San Marino|Liechtenstein|B
+8|Geography|hard|Which city is located on two continents?|Cairo|Moscow|Istanbul|Dubai|C
+9|Science|easy|What planet is known as the Red Planet?|Venus|Mars|Jupiter|Saturn|B
+10|Science|easy|What gas do plants absorb from the atmosphere?|Oxygen|Nitrogen|Carbon Dioxide|Hydrogen|C
+11|Science|easy|How many bones does an adult human body have?|186|206|226|246|B
+12|Science|medium|What is the chemical symbol for gold?|Go|Gd|Au|Ag|C
+13|Science|medium|Which element has the atomic number 1?|Helium|Hydrogen|Lithium|Oxygen|B
+14|Science|medium|What is the boiling point of water in Celsius?|90|95|100|110|C
+15|Science|hard|What is the most abundant gas in Earth's atmosphere?|Oxygen|Carbon Dioxide|Nitrogen|Argon|C
+16|Science|hard|What is the powerhouse of the cell?|Nucleus|Ribosome|Mitochondria|Golgi Apparatus|C
+17|Math|easy|What is 7 multiplied by 8?|54|56|58|62|B
+18|Math|easy|What is the square root of 144?|10|11|12|13|C
+19|Math|easy|How many sides does a hexagon have?|5|6|7|8|B
+20|Math|medium|What is the value of Pi to two decimal places?|3.12|3.14|3.16|3.18|B
+21|Math|medium|What is 15 percent of 200?|25|30|35|40|B
+22|Math|medium|What is the next prime number after 7?|8|9|10|11|D
+23|Math|hard|What is the derivative of x squared?|x|2x|x squared|2|B
+24|Math|hard|What is log base 10 of 1000?|2|3|4|10|B
+25|History|easy|In which year did World War II end?|1943|1944|1945|1946|C
+26|History|easy|Who was the first President of the United States?|John Adams|Thomas Jefferson|George Washington|Benjamin Franklin|C
+27|History|easy|The Great Wall was built in which country?|Japan|China|India|Mongolia|B
+28|History|medium|The Renaissance period began in which country?|France|Germany|Italy|Spain|C
+29|History|medium|Who reached the Americas in 1492?|Vasco da Gama|Christopher Columbus|Ferdinand Magellan|Amerigo Vespucci|B
+30|History|hard|In which year was the Magna Carta signed?|1066|1215|1415|1601|B
+31|History|hard|Which ancient civilization built Machu Picchu?|Aztec|Maya|Inca|Olmec|C
+32|Technology|easy|What does CPU stand for?|Central Process Unit|Central Processing Unit|Computer Personal Unit|Central Program Utility|B
+33|Technology|easy|Who is the co-founder of Microsoft?|Steve Jobs|Bill Gates|Mark Zuckerberg|Jeff Bezos|B
+34|Technology|medium|What does HTML stand for?|Hyper Text Markup Language|High Tech Modern Language|Hyper Transfer Markup Language|Home Tool Markup Language|A
+35|Technology|medium|In what year was the first iPhone released?|2005|2006|2007|2008|C
+36|Technology|hard|What programming language was created by James Gosling?|Python|Java|C++|Ruby|B
+37|Technology|hard|What does SQL stand for?|Structured Query Language|Simple Query Language|Standard Query Language|System Query Language|A

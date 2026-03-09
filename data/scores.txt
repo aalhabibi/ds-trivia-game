@@ -1,0 +1,1 @@
+# username|date|mode|score|correct|total|roomName
