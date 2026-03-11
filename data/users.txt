@@ -1,5 +1,3 @@
 # name|username|password
-John Doe|john|pass123
-Jane Smith|jane|pass456
-Alice Brown|alice|pass789
-Bob Wilson|bob|pass000
+aalhabibi2|aalhabibi2|123
+Ahmed Alhabibi|aalhabibi|123

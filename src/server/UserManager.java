@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class UserManager {
     private final Map<String, User> users = new ConcurrentHashMap<>();
+    private final Set<String> loggedInUsers = ConcurrentHashMap.newKeySet();
     private final String filePath;
     private static UserManager instance;
 
@@ -65,8 +66,8 @@ public class UserManager {
      * @throws UserNotFoundException if username not found (404)
      * @throws UnauthorizedException if password is wrong (401)
      */
-    public User authenticate(String username, String password)
-            throws UserNotFoundException, UnauthorizedException {
+    public synchronized User authenticate(String username, String password)
+            throws UserNotFoundException, UnauthorizedException, AlreadyLoggedInException {
         User user = users.get(username);
         if (user == null) {
             throw new UserNotFoundException("Username '" + username + "' not found.");
@@ -74,7 +75,17 @@ public class UserManager {
         if (!user.getPassword().equals(password)) {
             throw new UnauthorizedException("Wrong password.");
         }
+        if (loggedInUsers.contains(username)) {
+            throw new AlreadyLoggedInException("User is already logged in from another session.");
+        }
+        loggedInUsers.add(username);
         return user;
+    }
+
+    public synchronized void logout(String username) {
+        if (username != null && !username.trim().isEmpty()) {
+            loggedInUsers.remove(username);
+        }
     }
 
     /**
@@ -114,6 +125,12 @@ public class UserManager {
 
     public static class UsernameExistsException extends Exception {
         public UsernameExistsException(String msg) {
+            super(msg);
+        }
+    }
+
+    public static class AlreadyLoggedInException extends Exception {
+        public AlreadyLoggedInException(String msg) {
             super(msg);
         }
     }

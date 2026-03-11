@@ -113,6 +113,9 @@ public class ClientHandler implements Runnable {
         } catch (UserManager.UnauthorizedException e) {
             sendMessage("\nERROR 401: Unauthorized - wrong password.");
             return false;
+        } catch (UserManager.AlreadyLoggedInException e) {
+            sendMessage("\nERROR 409: User is already logged in from another client.");
+            return false;
         }
     }
 
@@ -896,6 +899,10 @@ public class ClientHandler implements Runnable {
     private void cleanup() {
         connected = false;
         System.out.println("[SERVER] Client disconnected: " + getUsername());
+
+        if (user != null) {
+            UserManager.getInstance().logout(user.getUsername());
+        }
 
         // Remove from room if in one
         if (currentRoom != null) {
