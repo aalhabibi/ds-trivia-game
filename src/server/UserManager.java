@@ -102,6 +102,7 @@ public class UserManager {
         }
         User user = new User(name, username, password);
         users.put(username, user);
+        loggedInUsers.add(username);
         try {
             save();
         } catch (IOException e) {
