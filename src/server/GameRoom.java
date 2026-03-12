@@ -163,11 +163,10 @@ public class GameRoom {
             return "Each team needs at least " + config.getMinPlayersPerTeam() + " player(s).";
         }
 
-        // Load questions
-        QuestionBank bank = QuestionBank.getInstance();
+        // Load questions via LookupServer
         String cat = category.equalsIgnoreCase("all") ? null : category;
         String diff = difficulty.equalsIgnoreCase("mixed") ? null : difficulty;
-        questions = bank.getQuestions(cat, diff, numQuestions);
+        questions = LookupConnector.getQuestions(cat, diff, numQuestions);
 
         if (questions.isEmpty()) {
             return "No questions available for the selected criteria.";
@@ -396,6 +395,12 @@ public class GameRoom {
         ScoreManager sm = ScoreManager.getInstance();
         String date = LocalDate.now().toString();
 
+        // Determine winning team (null on tie)
+        Team winningTeam = null;
+        if (team2 != null && team1.getScore() != team2.getScore()) {
+            winningTeam = team1.getScore() > team2.getScore() ? team1 : team2;
+        }
+
         for (ClientHandler p : getAllPlayers()) {
             int score = playerScores.getOrDefault(p, 0);
             List<String[]> results = playerResults.get(p);
@@ -410,6 +415,11 @@ public class GameRoom {
                     p.getUsername(), date, "multiplayer",
                     score, correctCount, questions.size(), name);
             sm.addScore(entry);
+
+            // Record a win for each player on the winning team
+            if (winningTeam != null && winningTeam.hasPlayer(p)) {
+                UserManager.getInstance().recordWin(p.getUsername());
+            }
         }
     }
 

@@ -54,8 +54,8 @@ public class ScoreEntry {
     }
 
     public static ScoreEntry fromFileString(String line) {
-        String[] parts = line.split("\\|");
-        if (parts.length < 7)
+        String[] parts = line.split("\\|", -1);
+        if (parts.length < 6)
             return null;
         try {
             return new ScoreEntry(

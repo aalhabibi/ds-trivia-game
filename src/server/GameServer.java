@@ -20,10 +20,10 @@ public class GameServer {
             UserManager userManager = UserManager.getInstance("data/users.txt");
             userManager.load();
 
-            // Load questions
-            System.out.println("[SERVER] Loading question bank...");
-            QuestionBank questionBank = QuestionBank.getInstance("data/questions.txt");
-            questionBank.load();
+            // Connect to LookupServer
+            int lookupPort = config.getLookupServerPort();
+            System.out.println("[SERVER] Connecting to LookupServer on port " + lookupPort + "...");
+            LookupConnector.configure("localhost", lookupPort);
 
             // Load scores
             System.out.println("[SERVER] Loading score history...");

@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RoomManager {
     private final Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
+    private PublicGameRoom currentPublicRoom = null;
     private static RoomManager instance;
 
     private RoomManager() {
@@ -52,5 +53,28 @@ public class RoomManager {
      */
     public synchronized void cleanup() {
         rooms.entrySet().removeIf(e -> e.getValue().getState() == GameRoom.RoomState.FINISHED);
+    }
+
+
+    public synchronized PublicGameRoom joinPublicRoom(ClientHandler player) {
+        GameConfig config = GameConfig.getInstance();
+        if (currentPublicRoom == null || !currentPublicRoom.canJoin()) {
+            currentPublicRoom = new PublicGameRoom(
+                    config.getPublicRoomMinPlayers(),
+                    config.getPublicRoomMaxPlayers(),
+                    config.getPublicRoomNumQuestions());
+        }
+        String err = currentPublicRoom.addPlayer(player);
+        if (err != null) {
+            player.sendMessage("Error joining public room: " + err);
+            return null;
+        }
+        return currentPublicRoom;
+    }
+
+    public synchronized void clearPublicRoom(PublicGameRoom room) {
+        if (currentPublicRoom == room) {
+            currentPublicRoom = null;
+        }
     }
 }

@@ -67,6 +67,28 @@ public class ScoreManager {
         return scoreHistory.getOrDefault(username, Collections.emptyList());
     }
 
+    public int getTotalQuestionsPlayed() {
+        int total = 0;
+        for (List<ScoreEntry> entries : scoreHistory.values())
+            for (ScoreEntry e : entries)
+                total += e.getTotal();
+        return total;
+    }
+
+    public ScoreEntry getHighestScoreEntry() {
+        ScoreEntry best = null;
+
+        for (List<ScoreEntry> entries : scoreHistory.values()) {
+            for (ScoreEntry e : entries) {
+                if (best == null || e.getScore() > best.getScore()) {
+                    best = e;
+                }
+            }
+        }
+
+        return best;
+    }
+
     private void save() throws IOException {
         try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
             pw.println("# username|date|mode|score|correct|total|roomName");

@@ -32,7 +32,6 @@ public class UserManager {
             file.getParentFile().mkdirs();
             file.createNewFile();
             System.out.println("[USERS] Created empty users file.");
-            return;
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -47,12 +46,22 @@ public class UserManager {
                 }
             }
         }
+
+        // Ensure admin exists
+        boolean hasAdmin = users.values().stream().anyMatch(User::isAdmin);
+        if (!hasAdmin) {
+            User admin = new User("Admin", "admin", "admin123", true, 0);
+            users.put(admin.getUsername(), admin);
+            save();
+            System.out.println("[USERS] No admin found, created default admin user.");
+        }
+
         System.out.println("[USERS] Loaded " + users.size() + " users.");
     }
 
     public synchronized void save() throws IOException {
         try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
-            pw.println("# name|username|password");
+            pw.println("# name|username|password|isAdmin|wins");
             for (User user : users.values()) {
                 pw.println(user.toFileString());
             }
@@ -86,6 +95,41 @@ public class UserManager {
         if (username != null && !username.trim().isEmpty()) {
             loggedInUsers.remove(username);
         }
+    }
+
+    public int getLoggedInCount() {
+        return loggedInUsers.size();
+    }
+
+    public synchronized void recordWin(String username) {
+        User user = users.get(username);
+        if (user != null) {
+            user.addWin();
+            try {
+                save();
+            } catch (IOException e) {
+                System.err.println("[USERS] Failed to save after recording win.");
+            }
+        }
+    }
+
+    public List<User> getUsersWithMostWins() {
+        List<User> bestUsers = new ArrayList<>();
+        int maxWins = 0;
+
+        for (User u : users.values()) {
+            if (u.isAdmin()) continue;
+
+            if (u.getWins() > maxWins) {
+                maxWins = u.getWins();
+                bestUsers.clear();
+                bestUsers.add(u);
+            } else if (u.getWins() == maxWins && maxWins > 0) {
+                bestUsers.add(u);
+            }
+        }
+
+        return bestUsers;
     }
 
     /**

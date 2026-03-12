@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
@@ -14,6 +15,7 @@ public class ClientHandler implements Runnable {
     private PrintWriter writer;
     private User user;
     private volatile GameRoom currentRoom;
+    private volatile PublicGameRoom currentPublicRoom;
     private volatile boolean connected = true;
 
     public ClientHandler(Socket socket) {
@@ -46,8 +48,12 @@ public class ClientHandler implements Runnable {
 
             System.out.println("[SERVER] User logged in: " + user.getUsername());
 
-            // Main menu loop
-            mainMenuLoop();
+            // Route admin users to the admin panel and regular users to game menu
+            if (user.isAdmin()) {
+                adminMenuLoop();
+            } else {
+                mainMenuLoop();
+            }
 
         } catch (IOException e) {
             System.out.println("[SERVER] Connection error for "
@@ -158,6 +164,73 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    // ===================== ADMIN PANEL =====================
+
+    private void adminMenuLoop() throws IOException {
+        while (connected) {
+            sendMessage("\n=========================================");
+            sendMessage("          ADMIN PANEL");
+            sendMessage("  Welcome, " + user.getName() + "!");
+            sendMessage("=========================================");
+            sendMessage("1. Total players connected");
+            sendMessage("2. Player with most wins");
+            sendMessage("3. Total questions played");
+            sendMessage("4. Highest score ever recorded");
+            sendMessage("5. Quit");
+            sendMessage("Enter choice:");
+
+            String choice = readLine();
+            if (choice == null)
+                break;
+            choice = choice.trim();
+
+            switch (choice) {
+                case "1": {
+                    int count = UserManager.getInstance().getLoggedInCount();
+                    sendMessage("\nTotal players currently connected: " + count);
+                    break;
+                }
+                case "2": {
+                    List<User> topUsers = UserManager.getInstance().getUsersWithMostWins();
+                    if (topUsers.isEmpty()) {
+                        sendMessage("\nNo wins recorded yet.");
+                    } else {
+                        int wins = topUsers.getFirst().getWins();
+                        if (topUsers.size() == 1) {
+                            sendMessage("\nPlayer with most wins: " + topUsers.getFirst().getUsername()
+                                    + " - " + wins + " win(s)");
+                        } else {
+                            String names = topUsers.stream()
+                                    .map(User::getUsername).collect(Collectors.joining(", "));
+                            sendMessage("\nPlayers tied with most wins (" + wins + "): " + names);
+                        }
+                    }
+                    break;
+                }
+                case "3": {
+                    int total = ScoreManager.getInstance().getTotalQuestionsPlayed();
+                    sendMessage("\nTotal questions played across all games: " + total);
+                    break;
+                }
+                case "4": {
+                    ScoreEntry best = ScoreManager.getInstance().getHighestScoreEntry();
+                    if (best != null) {
+                        sendMessage("Highest score ever: " + best.getScore() + " (by " + best.getUsername() + ")");
+                    } else {
+                        sendMessage("\nNo scores recorded yet.");
+                    }
+                    break;
+                }
+                case "5":
+                case "-":
+                    sendMessage("Goodbye, " + user.getName() + "!");
+                    return;
+                default:
+                    sendMessage("Invalid choice. Please enter 1-5.");
+            }
+        }
+    }
+
     // ===================== MAIN MENU =====================
 
     private void mainMenuLoop() throws IOException {
@@ -216,10 +289,8 @@ public class ClientHandler implements Runnable {
     // ===================== SINGLE PLAYER =====================
 
     private void handleSinglePlayer() throws IOException {
-        QuestionBank bank = QuestionBank.getInstance();
-
         // Choose category
-        Set<String> categories = bank.getCategories();
+        Set<String> categories = LookupConnector.getCategories();
         if (categories.isEmpty()) {
             sendMessage("No questions available in the bank.");
             return;
@@ -285,7 +356,7 @@ public class ClientHandler implements Runnable {
         }
 
         // Show available questions count
-        int available = bank.getAvailableCount(category, difficulty);
+        int available = LookupConnector.getAvailableCount(category, difficulty);
         if (available == 0) {
             sendMessage("No questions available for the selected criteria.");
             return;
@@ -308,7 +379,7 @@ public class ClientHandler implements Runnable {
         numQuestions = Math.max(1, Math.min(available, numQuestions));
 
         // Get questions
-        List<Question> questions = bank.getQuestions(category, difficulty, numQuestions);
+        List<Question> questions = LookupConnector.getQuestions(category, difficulty, numQuestions);
         if (questions.isEmpty()) {
             sendMessage("No questions found.");
             return;
@@ -479,7 +550,8 @@ public class ClientHandler implements Runnable {
             sendMessage("1. Create Room");
             sendMessage("2. Join Room");
             sendMessage("3. List Available Rooms");
-            sendMessage("4. Back to Main Menu");
+            sendMessage("4. Join Public Game Room");
+            sendMessage("5. Back to Main Menu");
             sendMessage("Enter choice:");
 
             String choice = readLine();
@@ -498,6 +570,9 @@ public class ClientHandler implements Runnable {
                     handleListRooms();
                     break;
                 case "4":
+                    handleJoinPublicRoom();
+                    break;
+                case "5":
                 case "-":
                     return;
                 default:
@@ -541,8 +616,7 @@ public class ClientHandler implements Runnable {
         }
 
         // Choose category
-        QuestionBank bank = QuestionBank.getInstance();
-        Set<String> categories = bank.getCategories();
+        Set<String> categories = LookupConnector.getCategories();
         List<String> catList = new ArrayList<>(categories);
         sendMessage("\nSelect category:");
         for (int i = 0; i < catList.size(); i++) {
@@ -607,7 +681,7 @@ public class ClientHandler implements Runnable {
         // Number of questions
         String cat = category.equalsIgnoreCase("All") ? null : category;
         String diff = difficulty.equalsIgnoreCase("Mixed") ? null : difficulty;
-        int available = bank.getAvailableCount(cat, diff);
+        int available = LookupConnector.getAvailableCount(cat, diff);
         if (available == 0) {
             sendMessage("No questions available for the selected criteria.");
             return;
@@ -881,6 +955,86 @@ public class ClientHandler implements Runnable {
         currentRoom = null;
     }
 
+    // ===================== PUBLIC GAME ROOM =====================
+
+    private void handleJoinPublicRoom() throws IOException {
+        GameConfig config = GameConfig.getInstance();
+        sendMessage("\nJoining public game room...");
+        sendMessage("Min players to start: " + config.getPublicRoomMinPlayers()
+                + " | Max players: " + config.getPublicRoomMaxPlayers()
+                + " | Questions: " + config.getPublicRoomNumQuestions());
+        sendMessage("Type '-' to leave the queue.");
+
+        currentPublicRoom = RoomManager.getInstance().joinPublicRoom(this);
+        if (currentPublicRoom == null) {
+            return;
+        }
+
+        // Wait in queue until game starts or player leaves
+        int prevTimeout = 0;
+        try {
+            prevTimeout = socket.getSoTimeout();
+            socket.setSoTimeout(2000);
+        } catch (SocketException e) { /* ignore */ }
+
+        try {
+            while (currentPublicRoom != null
+                    && currentPublicRoom.getState() == PublicGameRoom.State.WAITING
+                    && connected) {
+                try {
+                    String input = reader.readLine();
+                    if (input == null) { connected = false; break; }
+                    if ("-".equals(input.trim())) {
+                        currentPublicRoom.removePlayer(this);
+                        currentPublicRoom = null;
+                        sendMessage("You left the public room queue.");
+                        return;
+                    }
+                } catch (SocketTimeoutException e) { /* continue */ }
+            }
+        } finally {
+            try { socket.setSoTimeout(prevTimeout); } catch (SocketException e) { /* ignore */ }
+        }
+
+        if (currentPublicRoom != null
+                && currentPublicRoom.getState() == PublicGameRoom.State.IN_PROGRESS) {
+            enterPublicGameMode();
+        }
+        currentPublicRoom = null;
+    }
+
+    private void enterPublicGameMode() throws IOException {
+        int prevTimeout = 0;
+        try {
+            prevTimeout = socket.getSoTimeout();
+            socket.setSoTimeout(1000);
+        } catch (SocketException e) { /* ignore */ }
+
+        try {
+            while (currentPublicRoom != null
+                    && currentPublicRoom.getState() == PublicGameRoom.State.IN_PROGRESS
+                    && connected) {
+                try {
+                    String input = reader.readLine();
+                    if (input == null) { connected = false; break; }
+                    input = input.trim();
+                    if ("-".equals(input)) {
+                        currentPublicRoom.removePlayer(this);
+                        sendMessage("You left the public game.");
+                        currentPublicRoom = null;
+                        return;
+                    }
+                    if (!input.isEmpty()) {
+                        currentPublicRoom.submitAnswer(this, input);
+                    }
+                } catch (SocketTimeoutException e) { /* continue */ }
+            }
+        } finally {
+            try { socket.setSoTimeout(prevTimeout); } catch (SocketException e) { /* ignore */ }
+        }
+        currentPublicRoom = null;
+    }
+
     // ===================== UTILITY =====================
 
     private String readLine() throws IOException {
@@ -908,6 +1062,10 @@ public class ClientHandler implements Runnable {
         if (currentRoom != null) {
             currentRoom.removePlayer(this);
             currentRoom = null;
+        }
+        if (currentPublicRoom != null) {
+            currentPublicRoom.removePlayer(this);
+            currentPublicRoom = null;
         }
 
         try {

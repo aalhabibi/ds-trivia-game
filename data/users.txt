@@ -1,3 +1,5 @@
-# name|username|password
-aalhabibi2|aalhabibi2|123
-Ahmed Alhabibi|aalhabibi|123
+# name|username|password|isAdmin|wins
+Admin|admin|admin123|true|0
+aalhabibi2|aalhabibi2|123|false|1
+Ahmed Alhabibi|aalhabibi|123|false|0
+mariam|m|123|false|2
