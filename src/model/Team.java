@@ -1,4 +1,6 @@
-package server;
+package model;
+
+import server.ClientHandler;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
