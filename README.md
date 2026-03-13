@@ -12,33 +12,35 @@ A multiplayer trivia game built with Java Socket programming and multithreading.
 ## Project Structure
 
 ```
-Assignment 1/
-├── src/
-│   ├── model/               # Data model classes
-│   │   ├── User.java        # User account model
-│   │   ├── Question.java    # Trivia question model
-│   │   └── ScoreEntry.java  # Score history entry model
-│   ├── server/              # Server-side code
-│   │   ├── GameServer.java      # Main server entry point
-│   │   ├── ClientHandler.java   # Per-client connection handler (threaded)
-│   │   ├── UserManager.java     # User authentication & registration
-│   │   ├── QuestionBank.java    # Question loading & filtering
-│   │   ├── ScoreManager.java    # Score history persistence
-│   │   ├── GameConfig.java      # Configuration loader
-│   │   ├── GameRoom.java        # Multiplayer game room & game loop
-│   │   ├── RoomManager.java     # Active rooms registry
-│   │   └── Team.java            # Team within a game room
-│   └── client/              # Client-side code
-│       └── GameClient.java  # Thin terminal client (2 threads)
-├── data/                    # Data files (loaded at startup)
-│   ├── config.properties    # Server configuration
-│   ├── users.txt            # User credentials
-│   ├── scores.txt           # Score history
-│   └── questions.txt        # Question bank (37 MCQs)
-├── compile.bat              # Compilation script
-├── run_server.bat           # Launch server
-├── run_client.bat           # Launch client
-└── README.md                # This file
+ds-trivia-game/
+|-- src/
+|   |-- client/
+|   |   `-- GameClient.java
+|   |-- model/
+|   |   |-- Question.java
+|   |   |-- ScoreEntry.java
+|   |   `-- User.java
+|   `-- server/
+|       |-- ClientHandler.java
+|       |-- GameConfig.java
+|       |-- GameRoom.java
+|       |-- GameServer.java
+|       |-- LookupConnector.java
+|       |-- LookupServer.java
+|       |-- PublicGameRoom.java
+|       |-- RoomManager.java
+|       |-- ScoreManager.java
+|       |-- Team.java
+|       `-- UserManager.java
+|-- data/
+|   |-- config.properties
+|   |-- questions.txt
+|   |-- scores.txt
+|   `-- users.txt
+|-- compile.bat
+|-- run_client.bat
+|-- run_server.bat
+`-- README.md
 ```
 
 ## How to Compile & Run
@@ -55,9 +57,17 @@ Or manually:
 javac -d bin src\model\*.java src\server\*.java src\client\*.java
 ```
 
-### Step 2: Start the Server
+### Step 2: Start the Servers
 
+#### 1) Start LookupServer (terminal 1)
+
+```bat
+java -cp bin server.LookupServer
 ```
+
+#### 2) Start GameServer (terminal 2)
+
+```bat
 run_server.bat
 ```
 
@@ -67,7 +77,7 @@ Or manually:
 java -cp bin server.GameServer
 ```
 
-The server loads all data files from the `data/` directory and listens on port **12345** (configurable in `data/config.properties`).
+The servers load all data files from the `data/` directory and listens on port **12345** (configurable in `data/config.properties`).
 
 ### Step 3: Start Client(s)
 
@@ -113,6 +123,15 @@ You can connect multiple clients simultaneously (at least 4 supported).
 5. Team scores are the sum of individual member scores
 6. After the game: full results with per-player question details
 
+### Public Game Room
+
+- Shared matchmaking queue
+- Starts when:
+  - max players reached immediately, or
+  - min players reached and countdown completes
+- Uses all categories and mixed difficulty
+- Win recorded for top scorer(s)
+
 ### Game Mechanics
 
 - Each question has a time limit (default: 30 seconds, configurable)
@@ -132,6 +151,14 @@ You can connect multiple clients simultaneously (at least 4 supported).
 
 Wrong answers and timeouts score 0 points. No negative scoring.
 
+### Admin Panel
+Admin users are routed to an admin menu instead of normal gameplay menu.
+Available admin stats:
+- total connected players
+- player(s) with most wins
+- total questions played
+- highest score ever
+
 ### Score History
 
 View your past game scores from the main menu. History is persisted across server restarts.
@@ -142,9 +169,13 @@ Edit `data/config.properties` to customize:
 
 ```properties
 server.port=12345
+lookup.server.port=12346
 min.players.per.team=1
 max.players.per.team=4
 question.time.seconds=30
+public.room.min.players=2
+public.room.max.players=6
+public.room.num.questions=10
 ```
 
 ## Data File Formats
@@ -154,8 +185,9 @@ All data files use `|` as a delimiter.
 ### users.txt
 
 ```
-# name|username|password
-John Doe|john|pass123
+# name|username|password|isAdmin|wins
+Admin|admin|admin123|true|0
+John Doe|john|pass123|false|2
 ```
 
 ### questions.txt
@@ -170,16 +202,8 @@ John Doe|john|pass123
 ```
 # username|date|mode|score|correct|total|roomName
 john|2026-03-10|single|120|8|10|
+jane|2026-03-10|multiplayer|95|6|10|public
 ```
-
-## Pre-loaded Test Accounts
-
-| Name        | Username | Password |
-| ----------- | -------- | -------- |
-| John Doe    | john     | pass123  |
-| Jane Smith  | jane     | pass456  |
-| Alice Brown | alice    | pass789  |
-| Bob Wilson  | bob      | pass000  |
 
 ## Design Decisions & Assumptions
 
@@ -202,3 +226,7 @@ john|2026-03-10|single|120|8|10|
 9. **Error Handling**: Invalid inputs show descriptive error messages. Malformed data file lines are silently skipped. Socket errors trigger graceful disconnection and cleanup.
 
 10. **Quit Mechanism**: Typing `-` at any prompt allows the user to go back or quit the game. This works consistently throughout all menus and during gameplay.
+
+11. **Admin Users**: Admin user is inserted by default with username `admin` and password `admin123`.
+
+12. **LookupServer**: If `LookupServer` is not running, question/category operations fail.

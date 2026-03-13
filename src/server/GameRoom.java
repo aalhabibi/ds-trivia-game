@@ -2,7 +2,6 @@ package server;
 
 import model.Question;
 import model.ScoreEntry;
-import model.Team;
 
 import java.time.LocalDate;
 import java.util.*;
